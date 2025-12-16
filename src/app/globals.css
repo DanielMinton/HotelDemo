@@ -1,26 +1,103 @@
 @import "tailwindcss";
 
+/* ============================================
+   BOLD PORTFOLIO COLOR PALETTE
+   ============================================ */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Primary Colors */
+  --background: #0d0d0d;
+  --foreground: #f0f0f0;
+  --accent-teal: #00d9ff;
+  --accent-teal-dark: #00a8cc;
+  --accent-teal-light: #40e6ff;
+
+  /* Purple Accents */
+  --accent-purple: #b741d9;
+  --accent-purple-dark: #8b2fa8;
+  --accent-purple-light: #d965ff;
+
+  /* Gold & Orange Accents */
+  --accent-gold: #ffd700;
+  --accent-orange: #ff8c42;
+
+  /* Glow Effects */
+  --glow-teal: 0 0 20px rgba(0, 217, 255, 0.4);
+  --glow-purple: 0 0 20px rgba(183, 65, 217, 0.4);
+  --glow-gold: 0 0 20px rgba(255, 215, 0, 0.3);
+
+  /* Edge/Border Effects */
+  --edge-teal: 1px solid rgba(0, 217, 255, 0.3);
+  --edge-purple: 1px solid rgba(183, 65, 217, 0.3);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+  --font-sans: var(--font-ubuntu);
+  --font-mono: var(--font-ubuntu-mono);
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* Bold Custom Color Palette */
+  --color-teal: {
+    50: #f0fdfe;
+    100: #cffbf7;
+    200: #a0f7f0;
+    300: #40e6ff;
+    400: #00d9ff;
+    500: #00b8d4;
+    600: #00a8cc;
+    700: #008fa6;
+    800: #006b80;
+    900: #004d5c;
+    950: #002d36;
+  };
+
+  --color-purple: {
+    50: #faf5ff;
+    100: #f5e6ff;
+    200: #e9ccff;
+    300: #d965ff;
+    400: #b741d9;
+    500: #9d3fb5;
+    600: #8b2fa8;
+    700: #6d1f85;
+    800: #551a6d;
+    900: #3d0f53;
+    950: #2a0838;
+  };
+
+  --color-gold: {
+    50: #fffe99;
+    100: #fffd7a;
+    200: #ffd700;
+    300: #ffbb33;
+    400: #ff9f1c;
+    500: #e6b800;
+    600: #cc9900;
+    700: #b38600;
+    800: #996600;
+    900: #804d00;
+    950: #663300;
+  };
+
+  --color-orange: {
+    50: #fff7e6;
+    100: #ffebcc;
+    200: #ffd9b3;
+    300: #ffc799;
+    400: #ffb380;
+    500: #ff8c42;
+    600: #ff7a33;
+    700: #ff6b1f;
+    800: #e65100;
+    900: #cc3300;
+    950: #b32200;
+  };
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-ubuntu), sans-serif;
+  letter-spacing: 0.3px;
 }

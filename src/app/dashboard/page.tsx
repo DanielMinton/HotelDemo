@@ -52,19 +52,19 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div className="min-h-screen bg-black flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-400"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-8">
+    <div className="min-h-screen bg-black p-8">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Hotel Voice AI Dashboard</h1>
-          <p className="text-gray-600 mt-1">Real-time monitoring of your AI voice assistants</p>
+        <div className="mb-8 border-b border-purple-500/20 pb-6">
+          <h1 className="text-4xl font-black text-transparent bg-gradient-to-r from-teal-400 to-purple-500 bg-clip-text">Hotel Voice AI Dashboard</h1>
+          <p className="text-gray-400 mt-2 font-medium">Real-time monitoring of your AI voice assistants</p>
         </div>
 
         {/* Stats Grid */}
@@ -117,57 +117,57 @@ export default function DashboardPage() {
         </div>
 
         {/* Recent Calls Table */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-lg font-semibold text-gray-900">Recent Calls</h2>
+        <div className="bg-black/50 rounded-xl shadow-lg border border-teal-500/30 overflow-hidden backdrop-blur-sm">
+          <div className="px-6 py-4 border-b border-purple-500/20">
+            <h2 className="text-lg font-bold text-transparent bg-gradient-to-r from-teal-400 to-purple-500 bg-clip-text">Recent Calls</h2>
           </div>
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+            <table className="min-w-full divide-y divide-purple-500/20">
+              <thead className="bg-black/80">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-bold text-teal-400 uppercase tracking-wider">
                     Template
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-bold text-teal-400 uppercase tracking-wider">
                     Phone
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-bold text-teal-400 uppercase tracking-wider">
                     Duration
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-bold text-teal-400 uppercase tracking-wider">
                     Status
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-bold text-teal-400 uppercase tracking-wider">
                     Sentiment
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-bold text-teal-400 uppercase tracking-wider">
                     Time
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className="bg-black/30 divide-y divide-purple-500/20">
                 {recentCalls.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
+                    <td colSpan={6} className="px-6 py-8 text-center text-gray-400">
                       No calls recorded yet. Start making calls to see data here.
                     </td>
                   </tr>
                 ) : (
                   recentCalls.map((call) => (
-                    <tr key={call.id} className="hover:bg-gray-50">
+                    <tr key={call.id} className="hover:bg-purple-500/10 transition-colors">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getTemplateBadgeColor(call.template)}`}>
                           {formatTemplate(call.template)}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
                         {call.phoneNumber || 'Unknown'}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
                         {formatDuration(call.duration)}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusBadgeColor(call.status)}`}>
+                        <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${getStatusBadgeColor(call.status)}`}>
                           {call.status}
                         </span>
                       </td>
@@ -175,13 +175,13 @@ export default function DashboardPage() {
                         {call.sentiment !== null ? (
                           <div className="flex items-center">
                             <div className={`w-2 h-2 rounded-full mr-2 ${getSentimentDotColor(call.sentiment)}`} />
-                            <span className="text-sm text-gray-900">{formatSentiment(call.sentiment)}</span>
+                            <span className="text-sm text-gray-300">{formatSentiment(call.sentiment)}</span>
                           </div>
                         ) : (
-                          <span className="text-sm text-gray-400">N/A</span>
+                          <span className="text-sm text-gray-500">N/A</span>
                         )}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
                         {formatTime(call.createdAt)}
                       </td>
                     </tr>
@@ -236,23 +236,23 @@ export default function DashboardPage() {
 
 function StatCard({ title, value, icon, color }: { title: string; value: string | number; icon: React.ReactNode; color: string }) {
   const colorClasses: Record<string, string> = {
-    blue: 'bg-blue-50 text-blue-600',
-    green: 'bg-green-50 text-green-600',
-    purple: 'bg-purple-50 text-purple-600',
-    red: 'bg-red-50 text-red-600',
-    gray: 'bg-gray-50 text-gray-600',
-    indigo: 'bg-indigo-50 text-indigo-600',
-    cyan: 'bg-cyan-50 text-cyan-600',
+    blue: 'bg-teal-500/20 text-teal-400 shadow-lg shadow-teal-500/10',
+    green: 'bg-emerald-500/20 text-emerald-400 shadow-lg shadow-emerald-500/10',
+    purple: 'bg-purple-500/20 text-purple-400 shadow-lg shadow-purple-500/10',
+    red: 'bg-red-500/20 text-red-400 shadow-lg shadow-red-500/10',
+    gray: 'bg-gray-500/20 text-gray-400 shadow-lg shadow-gray-500/10',
+    indigo: 'bg-indigo-500/20 text-indigo-400 shadow-lg shadow-indigo-500/10',
+    cyan: 'bg-cyan-500/20 text-cyan-400 shadow-lg shadow-cyan-500/10',
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+    <div className="bg-black/50 rounded-xl shadow-lg border border-purple-500/30 p-6 backdrop-blur-sm hover:border-teal-500/50 transition-all">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm text-gray-500 font-medium">{title}</p>
-          <p className="text-2xl font-bold text-gray-900 mt-1">{value}</p>
+          <p className="text-sm text-gray-400 font-bold uppercase tracking-wide">{title}</p>
+          <p className="text-3xl font-black text-transparent bg-gradient-to-r from-teal-400 to-purple-400 bg-clip-text mt-2">{value}</p>
         </div>
-        <div className={`p-3 rounded-lg ${colorClasses[color] || colorClasses.gray}`}>
+        <div className={`p-4 rounded-lg ${colorClasses[color] || colorClasses.gray}`}>
           {icon}
         </div>
       </div>
@@ -273,13 +273,13 @@ function ActionCard({ title, description, action }: { title: string; description
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-      <h3 className="font-semibold text-gray-900">{title}</h3>
-      <p className="text-sm text-gray-500 mt-1">{description}</p>
+    <div className="bg-black/50 rounded-xl shadow-lg border border-teal-500/30 p-6 backdrop-blur-sm hover:border-purple-500/50 transition-all">
+      <h3 className="font-bold text-transparent bg-gradient-to-r from-teal-400 to-purple-500 bg-clip-text">{title}</h3>
+      <p className="text-sm text-gray-400 mt-2">{description}</p>
       <button
         onClick={handleClick}
         disabled={loading}
-        className="mt-4 w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        className="mt-4 w-full px-4 py-3 bg-gradient-to-r from-teal-600 to-purple-600 hover:from-teal-500 hover:to-purple-500 text-white font-bold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:scale-105 shadow-lg shadow-teal-500/20"
       >
         {loading ? 'Processing...' : 'Run'}
       </button>
@@ -295,26 +295,26 @@ function formatTemplate(template: string): string {
 function getTemplateBadgeColor(template: string): string {
   switch (template) {
     case 'CONCIERGE':
-      return 'bg-blue-100 text-blue-800';
+      return 'bg-teal-500/30 text-teal-300 border border-teal-500/50';
     case 'BOOKING_SQUAD':
-      return 'bg-purple-100 text-purple-800';
+      return 'bg-purple-500/30 text-purple-300 border border-purple-500/50';
     case 'PROACTIVE_SERVICES':
-      return 'bg-green-100 text-green-800';
+      return 'bg-orange-500/30 text-orange-300 border border-orange-500/50';
     default:
-      return 'bg-gray-100 text-gray-800';
+      return 'bg-gray-500/30 text-gray-300 border border-gray-500/50';
   }
 }
 
 function getStatusBadgeColor(status: string): string {
   switch (status) {
     case 'ENDED':
-      return 'bg-gray-100 text-gray-800';
+      return 'bg-gray-500/30 text-gray-300 border border-gray-500/50';
     case 'IN_PROGRESS':
-      return 'bg-green-100 text-green-800';
+      return 'bg-emerald-500/30 text-emerald-300 border border-emerald-500/50';
     case 'FAILED':
-      return 'bg-red-100 text-red-800';
+      return 'bg-red-500/30 text-red-300 border border-red-500/50';
     default:
-      return 'bg-yellow-100 text-yellow-800';
+      return 'bg-orange-500/30 text-orange-300 border border-orange-500/50';
   }
 }
 
@@ -333,15 +333,15 @@ function formatSentiment(sentiment: number): string {
 }
 
 function getSentimentColor(sentiment: number): string {
-  if (sentiment >= 0.3) return 'green';
+  if (sentiment >= 0.3) return 'emerald';
   if (sentiment >= -0.3) return 'gray';
   return 'red';
 }
 
 function getSentimentDotColor(sentiment: number): string {
-  if (sentiment >= 0.3) return 'bg-green-500';
-  if (sentiment >= -0.3) return 'bg-gray-400';
-  return 'bg-red-500';
+  if (sentiment >= 0.3) return 'bg-emerald-500 shadow-lg shadow-emerald-500/50';
+  if (sentiment >= -0.3) return 'bg-gray-400 shadow-lg shadow-gray-400/30';
+  return 'bg-red-500 shadow-lg shadow-red-500/50';
 }
 
 function formatTime(dateString: string): string {

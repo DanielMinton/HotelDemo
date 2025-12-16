@@ -1,4 +1,4 @@
-# VAPI Hotel Templates - Setup Guide
+1w# VAPI Hotel Templates - Setup Guide
 
 Complete step-by-step guide to get your hotel voice AI system running.
 
@@ -127,7 +127,7 @@ Your database is now in sync with your Prisma schema.
 npx prisma studio
 ```
 
-This opens a browser at `http://localhost:5555` where you can view your tables.
+This opens a browser at `**http://localhost:5555**` where you can view your tables.
 
 ---
 
