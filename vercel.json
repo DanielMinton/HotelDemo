@@ -7,15 +7,11 @@
     },
     {
       "path": "/api/cron/proactive-calls?type=process",
-      "schedule": "*/5 * * * *"
-    },
-    {
-      "path": "/api/cron/proactive-calls?type=wakeup",
-      "schedule": "* * * * *"
+      "schedule": "0 9 * * *"
     },
     {
       "path": "/api/cron/proactive-calls?type=sync",
-      "schedule": "*/15 * * * *"
+      "schedule": "0 7 * * *"
     }
   ],
   "functions": {
