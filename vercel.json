@@ -1,0 +1,29 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "crons": [
+    {
+      "path": "/api/cron/proactive-calls?type=schedule",
+      "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/cron/proactive-calls?type=process",
+      "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/cron/proactive-calls?type=wakeup",
+      "schedule": "* * * * *"
+    },
+    {
+      "path": "/api/cron/proactive-calls?type=sync",
+      "schedule": "*/15 * * * *"
+    }
+  ],
+  "functions": {
+    "src/app/api/vapi/webhook/route.ts": {
+      "maxDuration": 30
+    },
+    "src/app/api/cron/proactive-calls/route.ts": {
+      "maxDuration": 300
+    }
+  }
+}
