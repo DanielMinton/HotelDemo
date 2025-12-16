@@ -1,0 +1,519 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================
+// CORE MODELS
+// ============================================
+
+model Guest {
+  id              String   @id @default(cuid())
+  externalId      String?  @unique // PMS guest ID
+  firstName       String
+  lastName        String
+  email           String?  @unique
+  phone           String   @unique
+  preferredLanguage String @default("en")
+  vipStatus       Boolean  @default(false)
+  totalStays      Int      @default(0)
+  totalSpend      Float    @default(0)
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  reservations    Reservation[]
+  calls           Call[]
+  bookings        Booking[]
+  sentimentRecords SentimentRecord[]
+}
+
+model Reservation {
+  id              String   @id @default(cuid())
+  externalId      String?  @unique // PMS reservation ID
+  guestId         String
+  guest           Guest    @relation(fields: [guestId], references: [id])
+  roomNumber      String?
+  roomType        String
+  checkInDate     DateTime
+  checkOutDate    DateTime
+  status          ReservationStatus @default(CONFIRMED)
+  numberOfGuests  Int      @default(1)
+  specialRequests String?
+  totalAmount     Float?
+  paidAmount      Float    @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  proactiveCalls  ProactiveCall[]
+
+  @@index([checkInDate])
+  @@index([checkOutDate])
+  @@index([status])
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  CHECKED_IN
+  CHECKED_OUT
+  CANCELLED
+  NO_SHOW
+}
+
+// ============================================
+// CALL RECORDS
+// ============================================
+
+model Call {
+  id              String   @id @default(cuid())
+  vapiCallId      String   @unique
+  guestId         String?
+  guest           Guest?   @relation(fields: [guestId], references: [id])
+  direction       CallDirection @default(INBOUND)
+  template        TemplateType
+  phoneNumber     String?
+  startTime       DateTime
+  endTime         DateTime?
+  duration        Int?     // seconds
+  status          CallStatus @default(IN_PROGRESS)
+  language        String   @default("en")
+  transcript      String?
+  summary         String?
+  sentiment       Float?   // -1 to 1
+  toolsUsed       String[] // array of tool names
+  knowledgeQueries Int     @default(0)
+  cost            Float?
+  resolutionStatus ResolutionStatus @default(PENDING)
+  escalated       Boolean  @default(false)
+  metadata        Json?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  toolCalls       ToolCall[]
+
+  @@index([vapiCallId])
+  @@index([template])
+  @@index([startTime])
+}
+
+enum CallDirection {
+  INBOUND
+  OUTBOUND
+}
+
+enum TemplateType {
+  CONCIERGE
+  BOOKING_SQUAD
+  PROACTIVE_SERVICES
+}
+
+enum CallStatus {
+  QUEUED
+  RINGING
+  IN_PROGRESS
+  FORWARDING
+  ENDED
+  FAILED
+}
+
+enum ResolutionStatus {
+  RESOLVED
+  ESCALATED
+  PENDING
+  ABANDONED
+}
+
+model ToolCall {
+  id          String   @id @default(cuid())
+  callId      String
+  call        Call     @relation(fields: [callId], references: [id], onDelete: Cascade)
+  toolName    String
+  arguments   Json
+  result      Json?
+  success     Boolean  @default(true)
+  duration    Int?     // milliseconds
+  timestamp   DateTime @default(now())
+
+  @@index([callId])
+  @@index([toolName])
+}
+
+// ============================================
+// TEMPLATE 1: CONCIERGE - KNOWLEDGE BASE
+// ============================================
+
+model KnowledgeDocument {
+  id          String   @id @default(cuid())
+  externalId  String?  @unique // Trieve document ID
+  category    KnowledgeCategory
+  title       String
+  content     String
+  language    String   @default("en")
+  metadata    Json?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([category])
+  @@index([language])
+}
+
+enum KnowledgeCategory {
+  AMENITIES
+  DINING
+  SPA
+  ACTIVITIES
+  POLICIES
+  LOCAL_ATTRACTIONS
+  TRANSPORTATION
+  ROOM_FEATURES
+  EVENTS
+  FAQ
+}
+
+model SentimentRecord {
+  id          String   @id @default(cuid())
+  guestId     String?
+  guest       Guest?   @relation(fields: [guestId], references: [id])
+  callId      String?
+  sentiment   Float    // -1 to 1
+  vipIndicator Boolean @default(false)
+  notes       String?
+  createdAt   DateTime @default(now())
+
+  @@index([guestId])
+  @@index([createdAt])
+}
+
+// ============================================
+// TEMPLATE 2: BOOKING SQUAD
+// ============================================
+
+model RoomType {
+  id              String   @id @default(cuid())
+  code            String   @unique
+  name            String
+  description     String
+  basePrice       Float
+  maxOccupancy    Int
+  bedType         String
+  amenities       String[]
+  imageUrls       String[]
+  active          Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  rooms           Room[]
+  bookings        Booking[]
+}
+
+model Room {
+  id              String   @id @default(cuid())
+  roomNumber      String   @unique
+  roomTypeId      String
+  roomType        RoomType @relation(fields: [roomTypeId], references: [id])
+  floor           Int
+  status          RoomStatus @default(AVAILABLE)
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([status])
+}
+
+enum RoomStatus {
+  AVAILABLE
+  OCCUPIED
+  MAINTENANCE
+  CLEANING
+}
+
+model Booking {
+  id              String   @id @default(cuid())
+  confirmationCode String  @unique
+  guestId         String
+  guest           Guest    @relation(fields: [guestId], references: [id])
+  roomTypeId      String
+  roomType        RoomType @relation(fields: [roomTypeId], references: [id])
+  checkInDate     DateTime
+  checkOutDate    DateTime
+  numberOfGuests  Int
+  numberOfRooms   Int      @default(1)
+  status          BookingStatus @default(PENDING)
+  specialRequests String?
+
+  // Pricing
+  baseAmount      Float
+  taxes           Float
+  fees            Float
+  discounts       Float    @default(0)
+  totalAmount     Float
+
+  // Payment
+  stripePaymentIntentId String?
+  paymentStatus   PaymentStatus @default(PENDING)
+  paidAt          DateTime?
+
+  // Squad tracking
+  squadSessionId  String?
+  greeterAgentId  String?
+  qualifierAgentId String?
+  roomSpecialistAgentId String?
+  bookingAgentId  String?
+
+  // Confirmations
+  emailSentAt     DateTime?
+  smsSentAt       DateTime?
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([confirmationCode])
+  @@index([checkInDate])
+  @@index([status])
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+  NO_SHOW
+}
+
+enum PaymentStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+model PricingRule {
+  id              String   @id @default(cuid())
+  name            String
+  type            PricingRuleType
+  startDate       DateTime?
+  endDate         DateTime?
+  dayOfWeek       Int[]    // 0-6 for Sunday-Saturday
+  multiplier      Float    @default(1.0)
+  flatAdjustment  Float    @default(0)
+  minOccupancy    Float?   // percentage threshold
+  maxOccupancy    Float?
+  minStayNights   Int?
+  priority        Int      @default(0)
+  active          Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([type])
+  @@index([active])
+}
+
+enum PricingRuleType {
+  SEASONAL
+  WEEKDAY
+  WEEKEND
+  OCCUPANCY
+  LENGTH_OF_STAY
+  EARLY_BIRD
+  LAST_MINUTE
+  SPECIAL_EVENT
+}
+
+// ============================================
+// TEMPLATE 3: PROACTIVE SERVICES
+// ============================================
+
+model ProactiveCall {
+  id              String   @id @default(cuid())
+  reservationId   String
+  reservation     Reservation @relation(fields: [reservationId], references: [id])
+  callType        ProactiveCallType
+  scheduledTime   DateTime
+  actualTime      DateTime?
+  status          ProactiveCallStatus @default(SCHEDULED)
+  vapiCallId      String?
+  attempts        Int      @default(0)
+  maxAttempts     Int      @default(3)
+  result          Json?
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([callType])
+  @@index([scheduledTime])
+  @@index([status])
+}
+
+enum ProactiveCallType {
+  PRE_ARRIVAL
+  WAKE_UP
+  MID_STAY
+  PRE_CHECKOUT
+  POST_STAY
+}
+
+enum ProactiveCallStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+  CANCELLED
+  SKIPPED
+}
+
+model WakeUpRequest {
+  id              String   @id @default(cuid())
+  reservationId   String
+  roomNumber      String
+  requestedTime   DateTime
+  status          WakeUpStatus @default(PENDING)
+  attempts        Int      @default(0)
+  completedAt     DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([requestedTime])
+  @@index([status])
+}
+
+enum WakeUpStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+
+model GuestIssue {
+  id              String   @id @default(cuid())
+  reservationId   String?
+  roomNumber      String?
+  category        IssueCategory
+  severity        IssueSeverity
+  description     String
+  detectedBy      String   // 'ai' or 'staff'
+  callId          String?
+  status          IssueStatus @default(OPEN)
+  assignedTo      String?
+  resolution      String?
+  resolvedAt      DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([category])
+  @@index([severity])
+  @@index([status])
+}
+
+enum IssueCategory {
+  ROOM
+  SERVICE
+  NOISE
+  CLEANLINESS
+  TEMPERATURE
+  AMENITIES
+  BILLING
+  STAFF
+  OTHER
+}
+
+enum IssueSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum IssueStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  ESCALATED
+  CLOSED
+}
+
+model ServiceRequest {
+  id              String   @id @default(cuid())
+  reservationId   String?
+  roomNumber      String?
+  requestType     ServiceRequestType
+  description     String?
+  scheduledTime   DateTime?
+  status          ServiceRequestStatus @default(PENDING)
+  priority        Int      @default(0)
+  assignedTo      String?
+  completedAt     DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([requestType])
+  @@index([status])
+}
+
+enum ServiceRequestType {
+  HOUSEKEEPING
+  ROOM_SERVICE
+  MAINTENANCE
+  CONCIERGE
+  TRANSPORTATION
+  SPA
+  DINING
+  WAKE_UP
+  LUGGAGE
+  OTHER
+}
+
+enum ServiceRequestStatus {
+  PENDING
+  ASSIGNED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+// ============================================
+// ANALYTICS & METRICS
+// ============================================
+
+model DailyMetrics {
+  id              String   @id @default(cuid())
+  date            DateTime @unique
+  template        TemplateType
+
+  // Call metrics
+  totalCalls      Int      @default(0)
+  successfulCalls Int      @default(0)
+  failedCalls     Int      @default(0)
+  escalatedCalls  Int      @default(0)
+  avgDuration     Float?
+  avgSentiment    Float?
+
+  // Template-specific
+  // Concierge
+  knowledgeQueries Int     @default(0)
+  bookingsCreated Int      @default(0)
+
+  // Booking Squad
+  bookingConversions Int   @default(0)
+  totalRevenue    Float    @default(0)
+  avgBookingValue Float?
+  upsellConversions Int    @default(0)
+
+  // Proactive
+  issuesDetected  Int      @default(0)
+  issuesResolved  Int      @default(0)
+
+  // Costs
+  totalCost       Float    @default(0)
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([date])
+  @@index([template])
+}
