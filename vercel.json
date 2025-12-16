@@ -8,10 +8,6 @@
     {
       "path": "/api/cron/proactive-calls?type=process",
       "schedule": "0 9 * * *"
-    },
-    {
-      "path": "/api/cron/proactive-calls?type=sync",
-      "schedule": "0 7 * * *"
     }
   ],
   "functions": {
